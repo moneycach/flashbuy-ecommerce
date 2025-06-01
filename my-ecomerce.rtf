@@ -1,0 +1,1063 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1046{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset1 Segoe UI Symbol;}}
+{\*\generator Riched20 10.0.22621}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang22 Script para Desenvolvimento de Aplicativo Android E-commerce Completo\par
+Vis\'e3o Geral\par
+Este script descreve o desenvolvimento completo de um aplicativo Android de e-commerce com m\'faltiplos perfis de usu\'e1rio (admin, cliente, vendedor, entregador) e diversos m\'f3dulos avan\'e7ados.\par
+\par
+1. Configura\'e7\'e3o Inicial\par
+1.1 Requisitos T\'e9cnicos\par
+Android Studio (vers\'e3o mais recente)\par
+\par
+JDK 17+\par
+\par
+Firebase (para autentica\'e7\'e3o e banco de dados)\par
+\par
+SDK do Android m\'ednimo: API 26 (Android 8.0)\par
+\par
+Linguagens: Kotlin (principal), Java (para bibliotecas espec\'edficas)\par
+\par
+1.2 Estrutura do Projeto\par
+ecommerce-app/\par
+\f1\u9500?\u9472?\u9472?\f0  app/\par
+\f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  src/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  main/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  java/com/yourecommerce/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  auth/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  common/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  customer/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  admin/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  seller/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  delivery/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  di/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  models/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  network/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  repository/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  utils/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9492?\u9472?\u9472?\f0  MainActivity.kt\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9500?\u9472?\u9472?\f0  res/\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9474?\f0    \f1\u9492?\u9472?\u9472?\f0  AndroidManifest.xml\par
+\f1\u9474?\f0    \f1\u9474?\f0    \f1\u9492?\u9472?\u9472?\f0  test/\par
+\f1\u9500?\u9472?\u9472?\f0  build.gradle (Module)\par
+\f1\u9492?\u9472?\u9472?\f0  build.gradle (Project)\par
+2. Configura\'e7\'e3o do Firebase\par
+2.1 Adicionar Firebase ao projeto\par
+Criar projeto no Firebase Console\par
+\par
+Adicionar aplicativo Android\par
+\par
+Baixar arquivo google-services.json\par
+\par
+Configurar no build.gradle (Project):\par
+\par
+gradle\par
+buildscript \{\par
+    dependencies \{\par
+        classpath 'com.google.gms:google-services:4.3.15'\par
+    \}\par
+\}\par
+No build.gradle (Module):\par
+\par
+gradle\par
+plugins \{\par
+    id 'com.android.application'\par
+    id 'kotlin-android'\par
+    id 'com.google.gms.google-services'\par
+\}\par
+\par
+dependencies \{\par
+    implementation platform('com.google.firebase:firebase-bom:32.2.0')\par
+    implementation 'com.google.firebase:firebase-analytics-ktx'\par
+    implementation 'com.google.firebase:firebase-auth-ktx'\par
+    implementation 'com.google.firebase:firebase-firestore-ktx'\par
+    implementation 'com.google.firebase:firebase-storage-ktx'\par
+\}\par
+3. Autentica\'e7\'e3o e Perfis de Usu\'e1rio\par
+3.1 Modelos de Usu\'e1rio\par
+kotlin\par
+// User.kt\par
+sealed class User \{\par
+    abstract val uid: String\par
+    abstract val email: String\par
+    abstract val name: String\par
+    abstract val userType: UserType\par
+\}\par
+\par
+data class Customer(\par
+    override val uid: String,\par
+    override val email: String,\par
+    override val name: String,\par
+    val address: List<Address>,\par
+    val phone: String,\par
+    val points: Int = 0,\par
+    val affiliateCode: String? = null,\par
+    override val userType: UserType = UserType.CUSTOMER\par
+) : User()\par
+\par
+data class Admin(\par
+    override val uid: String,\par
+    override val email: String,\par
+    override val name: String,\par
+    val permissions: List<AdminPermission>,\par
+    override val userType: UserType = UserType.ADMIN\par
+) : User()\par
+\par
+data class Seller(\par
+    override val uid: String,\par
+    override val email: String,\par
+    override val name: String,\par
+    val storeId: String,\par
+    val rating: Float,\par
+    val products: List<String>,\par
+    override val userType: UserType = UserType.SELLER\par
+) : User()\par
+\par
+data class DeliveryPerson(\par
+    override val uid: String,\par
+    override val email: String,\par
+    override val name: String,\par
+    val vehicle: VehicleType,\par
+    val currentLocation: GeoPoint,\par
+    val ordersInProgress: List<String>,\par
+    override val userType: UserType = UserType.DELIVERY\par
+) : User()\par
+\par
+enum class UserType \{\par
+    CUSTOMER, ADMIN, SELLER, DELIVERY\par
+\}\par
+3.2 Gerenciamento de Autentica\'e7\'e3o\par
+kotlin\par
+// AuthRepository.kt\par
+class AuthRepository(private val auth: FirebaseAuth, private val db: FirebaseFirestore) \{\par
+    \par
+    suspend fun login(email: String, password: String): Resource<User> \{\par
+        return try \{\par
+            val authResult = auth.signInWithEmailAndPassword(email, password).await()\par
+            val user = getUserData(authResult.user?.uid ?: return Resource.Error("User not found"))\par
+            Resource.Success(user)\par
+        \} catch (e: Exception) \{\par
+            Resource.Error(e.message ?: "Login failed")\par
+        \}\par
+    \}\par
+    \par
+    private suspend fun getUserData(uid: String): User \{\par
+        val document = db.collection("users").document(uid).get().await()\par
+        return when (document.getString("userType")) \{\par
+            "CUSTOMER" -> document.toObject(Customer::class.java)!!\par
+            "ADMIN" -> document.toObject(Admin::class.java)!!\par
+            "SELLER" -> document.toObject(Seller::class.java)!!\par
+            "DELIVERY" -> document.toObject(DeliveryPerson::class.java)!!\par
+            else -> throw Exception("Invalid user type")\par
+        \}\par
+    \}\par
+    \par
+    // M\'e9todos para registro, logout, recupera\'e7\'e3o de senha, etc.\par
+\}\par
+4. M\'f3dulos Principais\par
+4.1 Dashboard Admin Master\par
+kotlin\par
+// AdminDashboardActivity.kt\par
+class AdminDashboardActivity : AppCompatActivity() \{\par
+    \par
+    private lateinit var binding: ActivityAdminDashboardBinding\par
+    private val viewModel: AdminViewModel by viewModels()\par
+    \par
+    override fun onCreate(savedInstanceState: Bundle?) \{\par
+        super.onCreate(savedInstanceState)\par
+        binding = ActivityAdminDashboardBinding.inflate(layoutInflater)\par
+        setContentView(binding.root)\par
+        \par
+        setupNavigation()\par
+        observeViewModel()\par
+        \par
+        viewModel.loadDashboardData()\par
+    \}\par
+    \par
+    private fun setupNavigation() \{\par
+        binding.bottomNavigation.setOnItemSelectedListener \{ item ->\par
+            when(item.itemId) \{\par
+                R.id.nav_stats -> showFragment(AdminStatsFragment())\par
+                R.id.nav_users -> showFragment(UserManagementFragment())\par
+                R.id.nav_orders -> showFragment(AdminOrdersFragment())\par
+                R.id.nav_products -> showFragment(ProductManagementFragment())\par
+                R.id.nav_settings -> showFragment(AdminSettingsFragment())\par
+                else -> false\par
+            \}\par
+        \}\par
+    \}\par
+    \par
+    private fun showFragment(fragment: Fragment): Boolean \{\par
+        supportFragmentManager.beginTransaction()\par
+            .replace(R.id.adminContainer, fragment)\par
+            .commit()\par
+        return true\par
+    \}\par
+    \par
+    private fun observeViewModel() \{\par
+        viewModel.dashboardData.observe(this) \{ data ->\par
+            // Atualizar UI com dados do dashboard\par
+        \}\par
+    \}\par
+\}\par
+4.2 M\'f3dulo de Cliente\par
+kotlin\par
+// ProductListFragment.kt\par
+class ProductListFragment : Fragment() \{\par
+    \par
+    private var _binding: FragmentProductListBinding? = null\par
+    private val binding get() = _binding!!\par
+    private val viewModel: ProductViewModel by viewModels()\par
+    private val adapter = ProductAdapter()\par
+    \par
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View \{\par
+        _binding = FragmentProductListBinding.inflate(inflater, container, false)\par
+        return binding.root\par
+    \}\par
+    \par
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) \{\par
+        super.onViewCreated(view, savedInstanceState)\par
+        \par
+        setupRecyclerView()\par
+        setupObservers()\par
+        setupSearch()\par
+        \par
+        viewModel.loadProducts()\par
+    \}\par
+    \par
+    private fun setupRecyclerView() \{\par
+        binding.productsRecyclerView.apply \{\par
+            layoutManager = GridLayoutManager(context, 2)\par
+            adapter = this@ProductListFragment.adapter\par
+            addItemDecoration(SpacingItemDecoration(16))\par
+        \}\par
+        \par
+        adapter.setOnItemClickListener \{ product ->\par
+            findNavController().navigate(\par
+                ProductListFragmentDirections.actionToProductDetail(product.id)\par
+            )\par
+        \}\par
+    \}\par
+    \par
+    private fun setupObservers() \{\par
+        viewModel.products.observe(viewLifecycleOwner) \{ products ->\par
+            adapter.submitList(products)\par
+        \}\par
+    \}\par
+    \par
+    private fun setupSearch() \{\par
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener \{\par
+            override fun onQueryTextSubmit(query: String?): Boolean \{\par
+                query?.let \{ viewModel.searchProducts(it) \}\par
+                return true\par
+            \}\par
+            \par
+            override fun onQueryTextChange(newText: String?): Boolean \{\par
+                newText?.let \{ viewModel.searchProducts(it) \}\par
+                return true\par
+            \}\par
+        \})\par
+    \}\par
+    \par
+    override fun onDestroyView() \{\par
+        super.onDestroyView()\par
+        _binding = null\par
+    \}\par
+\}\par
+4.3 M\'f3dulo de Vendedor\par
+kotlin\par
+// SellerOrdersFragment.kt\par
+class SellerOrdersFragment : Fragment() \{\par
+    \par
+    private val viewModel: SellerViewModel by viewModels()\par
+    private lateinit var adapter: SellerOrderAdapter\par
+    \par
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View \{\par
+        val binding = FragmentSellerOrdersBinding.inflate(inflater, container, false)\par
+        \par
+        adapter = SellerOrderAdapter \{ order ->\par
+            showOrderDetails(order)\par
+        \}\par
+        \par
+        binding.ordersRecyclerView.adapter = adapter\par
+        binding.ordersRecyclerView.layoutManager = LinearLayoutManager(context)\par
+        \par
+        viewModel.orders.observe(viewLifecycleOwner) \{ orders ->\par
+            adapter.submitList(orders)\par
+        \}\par
+        \par
+        binding.filterChipGroup.setOnCheckedStateChangeListener \{ group, checkedIds ->\par
+            val status = when (checkedIds.firstOrNull()) \{\par
+                R.id.chip_pending -> OrderStatus.PENDING\par
+                R.id.chip_processing -> OrderStatus.PROCESSING\par
+                R.id.chip_shipped -> OrderStatus.SHIPPED\par
+                R.id.chip_delivered -> OrderStatus.DELIVERED\par
+                R.id.chip_cancelled -> OrderStatus.CANCELLED\par
+                else -> null\par
+            \}\par
+            viewModel.filterOrders(status)\par
+        \}\par
+        \par
+        viewModel.loadOrders()\par
+        \par
+        return binding.root\par
+    \}\par
+    \par
+    private fun showOrderDetails(order: Order) \{\par
+        // Mostrar detalhes do pedido\par
+    \}\par
+\}\par
+4.4 M\'f3dulo de Entregador\par
+kotlin\par
+// DeliveryMapActivity.kt\par
+class DeliveryMapActivity : AppCompatActivity(), OnMapReadyCallback \{\par
+    \par
+    private lateinit var map: GoogleMap\par
+    private lateinit var binding: ActivityDeliveryMapBinding\par
+    private val viewModel: DeliveryViewModel by viewModels()\par
+    \par
+    override fun onCreate(savedInstanceState: Bundle?) \{\par
+        super.onCreate(savedInstanceState)\par
+        binding = ActivityDeliveryMapBinding.inflate(layoutInflater)\par
+        setContentView(binding.root)\par
+        \par
+        val mapFragment = supportFragmentManager\par
+            .findFragmentById(R.id.map) as SupportMapFragment\par
+        mapFragment.getMapAsync(this)\par
+        \par
+        setupLocationUpdates()\par
+        observeOrders()\par
+    \}\par
+    \par
+    override fun onMapReady(googleMap: GoogleMap) \{\par
+        map = googleMap\par
+        map.uiSettings.isZoomControlsEnabled = true\par
+        \par
+        // Configurar estilo do mapa se necess\'e1rio\par
+    \}\par
+    \par
+    private fun setupLocationUpdates() \{\par
+        val locationRequest = LocationRequest.create().apply \{\par
+            interval = 10000\par
+            fastestInterval = 5000\par
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY\par
+        \}\par
+        \par
+        val locationCallback = object : LocationCallback() \{\par
+            override fun onLocationResult(locationResult: LocationResult) \{\par
+                val location = locationResult.lastLocation\par
+                location?.let \{\par
+                    viewModel.updateDeliveryLocation(it.latitude, it.longitude)\par
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(\par
+                        LatLng(it.latitude, it.longitude), 15f))\par
+                \}\par
+            \}\par
+        \}\par
+        \par
+        LocationServices.getFusedLocationProviderClient(this)\par
+            .requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())\par
+    \}\par
+    \par
+    private fun observeOrders() \{\par
+        viewModel.assignedOrders.observe(this) \{ orders ->\par
+            // Mostrar pedidos no mapa\par
+            orders.forEach \{ order ->\par
+                val marker = map.addMarker(\par
+                    MarkerOptions()\par
+                        .position(LatLng(order.deliveryLatitude, order.deliveryLongitude))\par
+                        .title("Pedido #$\{order.id\}")\par
+                        .snippet("$\{order.customerName\} - $\{order.totalPrice\}")\par
+                )\par
+                marker?.tag = order.id\par
+            \}\par
+        \}\par
+    \}\par
+\}\par
+5. M\'f3dulos Espec\'edficos\par
+5.1 Club de Pontos\par
+kotlin\par
+// PointsFragment.kt\par
+class PointsFragment : Fragment() \{\par
+    \par
+    private val viewModel: PointsViewModel by viewModels()\par
+    private lateinit var binding: FragmentPointsBinding\par
+    \par
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View \{\par
+        binding = FragmentPointsBinding.inflate(inflater, container, false)\par
+        return binding.root\par
+    \}\par
+    \par
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) \{\par
+        super.onViewCreated(view, savedInstanceState)\par
+        \par
+        setupObservers()\par
+        setupClickListeners()\par
+        \par
+        viewModel.loadPointsData()\par
+    \}\par
+    \par
+    private fun setupObservers() \{\par
+        viewModel.pointsBalance.observe(viewLifecycleOwner) \{ balance ->\par
+            binding.pointsBalance.text = getString(R.string.points_balance, balance)\par
+        \}\par
+        \par
+        viewModel.rewards.observe(viewLifecycleOwner) \{ rewards ->\par
+            binding.rewardsRecyclerView.adapter = RewardsAdapter(rewards) \{ reward ->\par
+                showRewardDetails(reward)\par
+            \}\par
+        \}\par
+        \par
+        viewModel.transactions.observe(viewLifecycleOwner) \{ transactions ->\par
+            binding.transactionsRecyclerView.adapter = PointsTransactionAdapter(transactions)\par
+        \}\par
+    \}\par
+    \par
+    private fun setupClickListeners() \{\par
+        binding.redeemButton.setOnClickListener \{\par
+            findNavController().navigate(R.id.action_pointsFragment_to_redeemFragment)\par
+        \}\par
+        \par
+        binding.howItWorksButton.setOnClickListener \{\par
+            showPointsTutorial()\par
+        \}\par
+    \}\par
+    \par
+    private fun showRewardDetails(reward: Reward) \{\par
+        // Mostrar detalhes da recompensa\par
+    \}\par
+    \par
+    private fun showPointsTutorial() \{\par
+        // Mostrar tutorial do clube de pontos\par
+    \}\par
+\}\par
+5.2 Sistema de Afiliados\par
+kotlin\par
+// AffiliateProgramFragment.kt\par
+class AffiliateProgramFragment : Fragment() \{\par
+    \par
+    private lateinit var binding: FragmentAffiliateProgramBinding\par
+    private val viewModel: AffiliateViewModel by viewModels()\par
+    \par
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View \{\par
+        binding = FragmentAffiliateProgramBinding.inflate(inflater, container, false)\par
+        return binding.root\par
+    \}\par
+    \par
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) \{\par
+        super.onViewCreated(view, savedInstanceState)\par
+        \par
+        setupObservers()\par
+        setupClickListeners()\par
+        \par
+        viewModel.loadAffiliateData()\par
+    \}\par
+    \par
+    private fun setupObservers() \{\par
+        viewModel.affiliateData.observe(viewLifecycleOwner) \{ data ->\par
+            binding.affiliateCode.text = data.code\par
+            binding.totalEarnings.text = getString(R.string.earnings_format, data.totalEarnings)\par
+            binding.pendingBalance.text = getString(R.string.earnings_format, data.pendingBalance)\par
+            binding.referralsCount.text = data.referralsCount.toString()\par
+            \par
+            binding.shareButton.setOnClickListener \{\par
+                shareAffiliateCode(data.code)\par
+            \}\par
+        \}\par
+        \par
+        viewModel.referrals.observe(viewLifecycleOwner) \{ referrals ->\par
+            binding.referralsRecyclerView.adapter = ReferralAdapter(referrals)\par
+        \}\par
+    \}\par
+    \par
+    private fun setupClickListeners() \{\par
+        binding.withdrawButton.setOnClickListener \{\par
+            findNavController().navigate(R.id.action_to_withdrawFragment)\par
+        \}\par
+        \par
+        binding.howItWorksButton.setOnClickListener \{\par
+            showAffiliateTutorial()\par
+        \}\par
+    \}\par
+    \par
+    private fun shareAffiliateCode(code: String) \{\par
+        val shareIntent = Intent(Intent.ACTION_SEND).apply \{\par
+            type = "text/plain"\par
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.affiliate_share_message, code))\par
+        \}\par
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_via)))\par
+    \}\par
+    \par
+    private fun showAffiliateTutorial() \{\par
+        // Mostrar tutorial do programa de afiliados\par
+    \}\par
+\}\par
+5.3 Pagamento Offline\par
+kotlin\par
+// OfflinePaymentFragment.kt\par
+class OfflinePaymentFragment : Fragment() \{\par
+    \par
+    private lateinit var binding: FragmentOfflinePaymentBinding\par
+    private val viewModel: PaymentViewModel by viewModels()\par
+    \par
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View \{\par
+        binding = FragmentOfflinePaymentBinding.inflate(inflater, container, false)\par
+        return binding.root\par
+    \}\par
+    \par
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) \{\par
+        super.onViewCreated(view, savedInstanceState)\par
+        \par
+        setupPaymentMethods()\par
+        setupFormValidation()\par
+        setupClickListeners()\par
+    \}\par
+    \par
+    private fun setupPaymentMethods() \{\par
+        val methods = listOf(\par
+            PaymentMethod("Bank Transfer", R.drawable.ic_bank_transfer),\par
+            PaymentMethod("Cash on Delivery", R.drawable.ic_cash_on_delivery),\par
+            PaymentMethod("Payment at Store", R.drawable.ic_store_payment)\par
+        )\par
+        \par
+        binding.paymentMethodsRecyclerView.adapter = PaymentMethodAdapter(methods) \{ method ->\par
+            viewModel.selectedPaymentMethod = method\par
+            binding.paymentMethodDetails.visibility = View.VISIBLE\par
+            updatePaymentDetails(method)\par
+        \}\par
+    \}\par
+    \par
+    private fun updatePaymentDetails(method: PaymentMethod) \{\par
+        when (method.name) \{\par
+            "Bank Transfer" -> showBankTransferDetails()\par
+            "Cash on Delivery" -> showCashOnDeliveryDetails()\par
+            "Payment at Store" -> showStorePaymentDetails()\par
+        \}\par
+    \}\par
+    \par
+    private fun showBankTransferDetails() \{\par
+        binding.paymentDetails.text = getString(R.string.bank_transfer_details)\par
+        binding.uploadReceipt.visibility = View.VISIBLE\par
+    \}\par
+    \par
+    private fun setupFormValidation() \{\par
+        // Configurar valida\'e7\'e3o do formul\'e1rio\par
+    \}\par
+    \par
+    private fun setupClickListeners() \{\par
+        binding.confirmPaymentButton.setOnClickListener \{\par
+            if (validateForm()) \{\par
+                viewModel.processOfflinePayment().observe(viewLifecycleOwner) \{ result ->\par
+                    when (result) \{\par
+                        is Resource.Success -> showPaymentSuccess()\par
+                        is Resource.Error -> showPaymentError(result.message)\par
+                    \}\par
+                \}\par
+            \}\par
+        \}\par
+    \}\par
+    \par
+    private fun validateForm(): Boolean \{\par
+        // Validar formul\'e1rio\par
+        return true\par
+    \}\par
+    \par
+    private fun showPaymentSuccess() \{\par
+        // Mostrar sucesso no pagamento\par
+    \}\par
+    \par
+    private fun showPaymentError(message: String?) \{\par
+        // Mostrar erro no pagamento\par
+    \}\par
+\}\par
+5.4 Sistema de Reembolso\par
+kotlin\par
+// RefundRequestFragment.kt\par
+class RefundRequestFragment : Fragment() \{\par
+    \par
+    private lateinit var binding: FragmentRefundRequestBinding\par
+    private val viewModel: RefundViewModel by viewModels()\par
+    private val orderId by navArgs<RefundRequestFragmentArgs>().value.orderId\par
+    \par
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View \{\par
+        binding = FragmentRefundRequestBinding.inflate(inflater, container, false)\par
+        return binding.root\par
+    \}\par
+    \par
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) \{\par
+        super.onViewCreated(view, savedInstanceState)\par
+        \par
+        loadOrderDetails()\par
+        setupReasonsSpinner()\par
+        setupClickListeners()\par
+    \}\par
+    \par
+    private fun loadOrderDetails() \{\par
+        viewModel.getOrderDetails(orderId).observe(viewLifecycleOwner) \{ order ->\par
+            binding.orderDetails = order\par
+        \}\par
+    \}\par
+    \par
+    private fun setupReasonsSpinner() \{\par
+        val reasons = listOf(\par
+            "Received wrong item",\par
+            "Item damaged",\par
+            "Item not as described",\par
+            "Changed my mind",\par
+            "Other"\par
+        )\par
+        \par
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, reasons)\par
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)\par
+        binding.reasonSpinner.adapter = adapter\par
+    \}\par
+    \par
+    private fun setupClickListeners() \{\par
+        binding.submitButton.setOnClickListener \{\par
+            if (validateForm()) \{\par
+                submitRefundRequest()\par
+            \}\par
+        \}\par
+        \par
+        binding.attachPhotoButton.setOnClickListener \{\par
+            openImagePicker()\par
+        \}\par
+    \}\par
+    \par
+    private fun validateForm(): Boolean \{\par
+        // Validar formul\'e1rio\par
+        return true\par
+    \}\par
+    \par
+    private fun submitRefundRequest() \{\par
+        val reason = binding.reasonSpinner.selectedItem.toString()\par
+        val description = binding.descriptionEditText.text.toString()\par
+        val photos = viewModel.selectedPhotos.value ?: emptyList()\par
+        \par
+        viewModel.submitRefundRequest(orderId, reason, description, photos)\par
+            .observe(viewLifecycleOwner) \{ result ->\par
+                when (result) \{\par
+                    is Resource.Success -> showSuccess()\par
+                    is Resource.Error -> showError(result.message)\par
+                \}\par
+            \}\par
+    \}\par
+    \par
+    private fun showSuccess() \{\par
+        // Mostrar sucesso\par
+    \}\par
+    \par
+    private fun showError(message: String?) \{\par
+        // Mostrar erro\par
+    \}\par
+    \par
+    private fun openImagePicker() \{\par
+        // Abrir seletor de imagens\par
+    \}\par
+\}\par
+5.5 Venda em Atacado\par
+kotlin\par
+// WholesaleFragment.kt\par
+class WholesaleFragment : Fragment() \{\par
+    \par
+    private lateinit var binding: FragmentWholesaleBinding\par
+    private val viewModel: WholesaleViewModel by viewModels()\par
+    \par
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View \{\par
+        binding = FragmentWholesaleBinding.inflate(inflater, container, false)\par
+        return binding.root\par
+    \}\par
+    \par
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) \{\par
+        super.onViewCreated(view, savedInstanceState)\par
+        \par
+        setupCategories()\par
+        setupProductsRecyclerView()\par
+        setupClickListeners()\par
+        \par
+        viewModel.loadWholesaleProducts()\par
+    \}\par
+    \par
+    private fun setupCategories() \{\par
+        viewModel.categories.observe(viewLifecycleOwner) \{ categories ->\par
+            binding.categoriesChipGroup.removeAllViews()\par
+            \par
+            categories.forEach \{ category ->\par
+                val chip = Chip(requireContext()).apply \{\par
+                    text = category.name\par
+                    isCheckable = true\par
+                    setOnCheckedChangeListener \{ _, isChecked ->\par
+                        if (isChecked) \{\par
+                            viewModel.filterProductsByCategory(category.id)\par
+                        \}\par
+                    \}\par
+                \}\par
+                binding.categoriesChipGroup.addView(chip)\par
+            \}\par
+        \}\par
+    \}\par
+    \par
+    private fun setupProductsRecyclerView() \{\par
+        binding.productsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)\par
+        \par
+        viewModel.products.observe(viewLifecycleOwner) \{ products ->\par
+            binding.productsRecyclerView.adapter = WholesaleProductAdapter(products) \{ product ->\par
+                showProductDetails(product)\par
+            \}\par
+        \}\par
+    \}\par
+    \par
+    private fun setupClickListeners() \{\par
+        binding.requestQuoteButton.setOnClickListener \{\par
+            showQuoteRequestDialog()\par
+        \}\par
+        \par
+        binding.contactSalesButton.setOnClickListener \{\par
+            contactSalesTeam()\par
+        \}\par
+    \}\par
+    \par
+    private fun showProductDetails(product: WholesaleProduct) \{\par
+        // Mostrar detalhes do produto\par
+    \}\par
+    \par
+    private fun showQuoteRequestDialog() \{\par
+        // Mostrar di\'e1logo de solicita\'e7\'e3o de cota\'e7\'e3o\par
+    \}\par
+    \par
+    private fun contactSalesTeam() \{\par
+        // Contatar equipe de vendas\par
+    \}\par
+\}\par
+5.6 Blog Integrado\par
+kotlin\par
+// BlogFragment.kt\par
+class BlogFragment : Fragment() \{\par
+    \par
+    private lateinit var binding: FragmentBlogBinding\par
+    private val viewModel: BlogViewModel by viewModels()\par
+    private lateinit var adapter: BlogPostAdapter\par
+    \par
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View \{\par
+        binding = FragmentBlogBinding.inflate(inflater, container, false)\par
+        return binding.root\par
+    \}\par
+    \par
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) \{\par
+        super.onViewCreated(view, savedInstanceState)\par
+        \par
+        setupRecyclerView()\par
+        setupSwipeRefresh()\par
+        setupSearch()\par
+        \par
+        viewModel.loadBlogPosts()\par
+    \}\par
+    \par
+    private fun setupRecyclerView() \{\par
+        adapter = BlogPostAdapter \{ post ->\par
+            navigateToPostDetail(post.id)\par
+        \}\par
+        \par
+        binding.postsRecyclerView.adapter = adapter\par
+        binding.postsRecyclerView.layoutManager = LinearLayoutManager(requireContext())\par
+        binding.postsRecyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))\par
+        \par
+        viewModel.blogPosts.observe(viewLifecycleOwner) \{ posts ->\par
+            adapter.submitList(posts)\par
+            binding.swipeRefresh.isRefreshing = false\par
+        \}\par
+    \}\par
+    \par
+    private fun setupSwipeRefresh() \{\par
+        binding.swipeRefresh.setOnRefreshListener \{\par
+            viewModel.refreshBlogPosts()\par
+        \}\par
+    \}\par
+    \par
+    private fun setupSearch() \{\par
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener \{\par
+            override fun onQueryTextSubmit(query: String?): Boolean \{\par
+                query?.let \{ viewModel.searchPosts(it) \}\par
+                return true\par
+            \}\par
+            \par
+            override fun onQueryTextChange(newText: String?): Boolean \{\par
+                newText?.let \{ viewModel.searchPosts(it) \}\par
+                return true\par
+            \}\par
+        \})\par
+    \}\par
+    \par
+    private fun navigateToPostDetail(postId: String) \{\par
+        findNavController().navigate(\par
+            BlogFragmentDirections.actionBlogFragmentToBlogDetailFragment(postId)\par
+        )\par
+    \}\par
+\}\par
+5.7 Sistema POS (Ponto de Venda)\par
+kotlin\par
+// POSActivity.kt\par
+class POSActivity : AppCompatActivity() \{\par
+    \par
+    private lateinit var binding: ActivityPosBinding\par
+    private val viewModel: POSViewModel by viewModels()\par
+    private lateinit var productAdapter: POSProductAdapter\par
+    private lateinit var cartAdapter: POSCartAdapter\par
+    \par
+    override fun onCreate(savedInstanceState: Bundle?) \{\par
+        super.onCreate(savedInstanceState)\par
+        binding = ActivityPosBinding.inflate(layoutInflater)\par
+        setContentView(binding.root)\par
+        \par
+        setupProductsRecyclerView()\par
+        setupCartRecyclerView()\par
+        setupBarcodeScanner()\par
+        setupClickListeners()\par
+        setupObservers()\par
+        \par
+        viewModel.loadProducts()\par
+    \}\par
+    \par
+    private fun setupProductsRecyclerView() \{\par
+        productAdapter = POSProductAdapter \{ product ->\par
+            viewModel.addToCart(product)\par
+        \}\par
+        \par
+        binding.productsRecyclerView.apply \{\par
+            adapter = productAdapter\par
+            layoutManager = GridLayoutManager(this@POSActivity, 4)\par
+        \}\par
+    \}\par
+    \par
+    private fun setupCartRecyclerView() \{\par
+        cartAdapter = POSCartAdapter(\par
+            onIncrease = \{ item -> viewModel.increaseQuantity(item) \},\par
+            onDecrease = \{ item -> viewModel.decreaseQuantity(item) \},\par
+            onRemove = \{ item -> viewModel.removeFromCart(item) \}\par
+        )\par
+        \par
+        binding.cartRecyclerView.apply \{\par
+            adapter = cartAdapter\par
+            layoutManager = LinearLayoutManager(this@POSActivity)\par
+        \}\par
+    \}\par
+    \par
+    private fun setupBarcodeScanner() \{\par
+        binding.scanButton.setOnClickListener \{\par
+            val options = BarcodeScannerOptions.Builder()\par
+                .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)\par
+                .build()\par
+            \par
+            val scanner = BarcodeScanning.getClient(options)\par
+            \par
+            // Implementar a captura de imagem e processamento do c\'f3digo de barras\par
+        \}\par
+    \}\par
+    \par
+    private fun setupClickListeners() \{\par
+        binding.checkoutButton.setOnClickListener \{\par
+            viewModel.processPayment().observe(this) \{ result ->\par
+                when (result) \{\par
+                    is Resource.Success -> showReceipt(result.data)\par
+                    is Resource.Error -> showError(result.message)\par
+                \}\par
+            \}\par
+        \}\par
+        \par
+        binding.discountButton.setOnClickListener \{\par
+            showDiscountDialog()\par
+        \}\par
+        \par
+        binding.customerButton.setOnClickListener \{\par
+            selectCustomer()\par
+        \}\par
+    \}\par
+    \par
+    private fun setupObservers() \{\par
+        viewModel.products.observe(this) \{ products ->\par
+            productAdapter.submitList(products)\par
+        \}\par
+        \par
+        viewModel.cartItems.observe(this) \{ items ->\par
+            cartAdapter.submitList(items)\par
+            updateCartTotal()\par
+        \}\par
+    \}\par
+    \par
+    private fun updateCartTotal() \{\par
+        binding.totalAmount.text = viewModel.getCartTotal().toString()\par
+    \}\par
+    \par
+    private fun showReceipt(receipt: Receipt) \{\par
+        // Mostrar recibo\par
+    \}\par
+    \par
+    private fun showError(message: String?) \{\par
+        // Mostrar erro\par
+    \}\par
+    \par
+    private fun showDiscountDialog() \{\par
+        // Mostrar di\'e1logo de desconto\par
+    \}\par
+    \par
+    private fun selectCustomer() \{\par
+        // Selecionar cliente\par
+    \}\par
+\}\par
+5.8 Sistema de Suporte\par
+kotlin\par
+// SupportFragment.kt\par
+class SupportFragment : Fragment() \{\par
+    \par
+    private lateinit var binding: FragmentSupportBinding\par
+    private val viewModel: SupportViewModel by viewModels()\par
+    private lateinit var adapter: SupportTicketAdapter\par
+    \par
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View \{\par
+        binding = FragmentSupportBinding.inflate(inflater, container, false)\par
+        return binding.root\par
+    \}\par
+    \par
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) \{\par
+        super.onViewCreated(view, savedInstanceState)\par
+        \par
+        setupRecyclerView()\par
+        setupClickListeners()\par
+        setupObservers()\par
+        \par
+        viewModel.loadTickets()\par
+    \}\par
+    \par
+    private fun setupRecyclerView() \{\par
+        adapter = SupportTicketAdapter \{ ticket ->\par
+            openTicketDetails(ticket.id)\par
+        \}\par
+        \par
+        binding.ticketsRecyclerView.adapter = adapter\par
+        binding.ticketsRecyclerView.layoutManager = LinearLayoutManager(requireContext())\par
+    \}\par
+    \par
+    private fun setupClickListeners() \{\par
+        binding.newTicketButton.setOnClickListener \{\par
+            createNewTicket()\par
+        \}\par
+        \par
+        binding.faqButton.setOnClickListener \{\par
+            openFAQ()\par
+        \}\par
+        \par
+        binding.liveChatButton.setOnClickListener \{\par
+            startLiveChat()\par
+        \}\par
+    \}\par
+    \par
+    private fun setupObservers() \{\par
+        viewModel.tickets.observe(viewLifecycleOwner) \{ tickets ->\par
+            adapter.submitList(tickets)\par
+            \par
+            if (tickets.isEmpty()) \{\par
+                binding.emptyState.visibility = View.VISIBLE\par
+                binding.ticketsRecyclerView.visibility = View.GONE\par
+            \} else \{\par
+                binding.emptyState.visibility = View.GONE\par
+                binding.ticketsRecyclerView.visibility = View.VISIBLE\par
+            \}\par
+        \}\par
+    \}\par
+    \par
+    private fun openTicketDetails(ticketId: String) \{\par
+        findNavController().navigate(\par
+            SupportFragmentDirections.actionSupportFragmentToTicketDetailFragment(ticketId)\par
+        )\par
+    \}\par
+    \par
+    private fun createNewTicket() \{\par
+        findNavController().navigate(R.id.action_supportFragment_to_newTicketFragment)\par
+    \}\par
+    \par
+    private fun openFAQ() \{\par
+        findNavController().navigate(R.id.action_supportFragment_to_faqFragment)\par
+    \}\par
+    \par
+    private fun startLiveChat() \{\par
+        // Iniciar chat ao vivo\par
+    \}\par
+\}\par
+6. Configura\'e7\'e3o de Depend\'eancias\par
+6.1 build.gradle (Module)\par
+gradle\par
+dependencies \{\par
+    // AndroidX\par
+    implementation 'androidx.core:core-ktx:1.10.1'\par
+    implementation 'androidx.appcompat:appcompat:1.6.1'\par
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'\par
+    implementation 'androidx.recyclerview:recyclerview:1.3.1'\par
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'\par
+    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'\par
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'\par
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'\par
+    implementation 'androidx.activity:activity-ktx:1.7.2'\par
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'\par
+    \par
+    // Material Design\par
+    implementation 'com.google.android.material:material:1.9.0'\par
+    \par
+    // Firebase\par
+    implementation platform('com.google.firebase:firebase-bom:32.2.0')\par
+    implementation 'com.google.firebase:firebase-auth-ktx'\par
+    implementation 'com.google.firebase:firebase-firestore-ktx'\par
+    implementation 'com.google.firebase:firebase-storage-ktx'\par
+    implementation 'com.google.firebase:firebase-messaging-ktx'\par
+    implementation 'com.google.firebase:firebase-analytics-ktx'\par
+    \par
+    // Coroutines\par
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'\par
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'\par
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1'\par
+    \par
+    // Retrofit\par
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'\par
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'\par
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'\par
+    \par
+    // Glide\par
+    implementation 'com.github.bumptech.glide:glide:4.15.1'\par
+    kapt 'com.github.bumptech.glide:compiler:4.15.1'\par
+    \par
+    // Google Maps\par
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'\par
+    implementation 'com.google.android.gms:play-services-location:21.0.1'\par
+    \par
+    // Barcode Scanning\par
+    implementation 'com.google.mlkit:barcode-scanning:17.1.0'\par
+    \par
+    // Payment Gateway\par
+    implementation 'com.stripe:stripe-android:20.25.1'\par
+    \par
+    // Other\par
+    implementation 'de.hdodenhof:circleimageview:3.1.0'\par
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'\par
+    implementation 'com.github.chivorns:smartmaterialspinner:2.0.0'\par
+    \par
+    // Testing\par
+    testImplementation 'junit:junit:4.13.2'\par
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'\par
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'\par
+\}\par
+7. Considera\'e7\'f5es Finais\par
+Este script fornece uma estrutura completa para o desenvolvimento de um aplicativo Android de e-commerce com todos os m\'f3dulos solicitados. Algumas considera\'e7\'f5es importantes:\par
+\par
+Seguran\'e7a: Implemente medidas de seguran\'e7a adequadas, especialmente para pagamentos e dados de usu\'e1rios.\par
+\par
+Testes: Desenvolva testes unit\'e1rios e de UI para garantir a qualidade do aplicativo.\par
+\par
+Performance: Otimize o aplicativo para diferentes tamanhos de tela e condi\'e7\'f5es de rede.\par
+\par
+Escalabilidade: Projete a arquitetura para permitir f\'e1cil expans\'e3o no futuro.\par
+\par
+Conformidade: Certifique-se de cumprir com as pol\'edticas da Google Play Store e regulamenta\'e7\'f5es locais.\par
+\par
+Atualiza\'e7\'f5es: Mantenha todas as bibliotecas e depend\'eancias atualizadas.\par
+\par
+Monitoramento: Implemente ferramentas de monitoramento de crash e an\'e1lise de uso.\par
+\par
+Para implementar este projeto, recomenda-se seguir uma abordagem modular, desenvolvendo e testando cada funcionalidade separadamente antes de integr\'e1-las no aplicativo principal.\par
+}
+ 
